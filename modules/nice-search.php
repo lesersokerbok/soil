@@ -22,10 +22,9 @@ function soil_nice_search_redirect() {
     $query_vars = $wp_query->query;
 
     if (count($query_vars) > 1) {
-      $search_string .= '#!/';
+      $search_string .= '?';
       foreach ($query_vars as $key => $value) {
         if ($key != 's') {
-          $key = str_replace("_tax_", "_facet_", $key);
           $search_string .= $key . '=' . $value . '&';
         }
       }
