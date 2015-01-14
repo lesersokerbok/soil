@@ -16,21 +16,30 @@ function soil_nice_search_redirect() {
   $search_base = $wp_rewrite->search_base;
   if (is_search() && !is_admin() && strpos($_SERVER['REQUEST_URI'], "/{$search_base}/") === false) {
 
-    $search_string = urlencode(get_query_var('s'));
-
+    // Get all query vars
     global $wp_query;
     $query_vars = $wp_query->query;
 
-    if (count($query_vars) > 1) {
+    // Handle main search query string
+    $search_string = urlencode($query_vars['s']);
+    unset($query_vars['s']);
+
+    // Prepare for extra query vars
+    if (count($query_vars) > 0) {
       $search_string .= '?';
-      foreach ($query_vars as $key => $value) {
-        if ($key != 's') {
-          $search_string .= $key . '=' . $value . '&';
-        }
-      }
-      $search_string = rtrim($search_string, "&");
     }
 
+    // Append extra query vars
+    foreach ($query_vars as $key => $value) {
+      if ($key != 's') {
+        $search_string .= urlencode($key) . '=' . urlencode($value) . '&';
+      }
+    }
+
+    // Trim trailing ampersand
+    $search_string = rtrim($search_string, "&");
+
+    // Redirect
     wp_redirect(home_url("/{$search_base}/" . $search_string));
 
     exit();
